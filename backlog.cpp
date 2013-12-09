@@ -25,6 +25,7 @@
 #include <dirent.h>
 #include <vector>
 #include <algorithm>
+#include <ctime>
 
 class CBacklogMod : public CModule {
 public:
@@ -96,6 +97,7 @@ void CBacklogMod::OnModCommand(const CString& sCommand) {
 	CString Network = (m_pNetwork ? m_pNetwork->GetName() : "znc");
 	CString Channel = sCommand.Token(0);
 
+
 	int printedLines = 0;
 	int reqLines = sCommand.Token(1).ToInt();
 	if(reqLines <= 0) {
@@ -107,6 +109,17 @@ void CBacklogMod::OnModCommand(const CString& sCommand) {
 	Path.Replace("$NETWORK", Network);
 	Path.Replace("$WINDOW", Channel);
 	Path.Replace("$USER", User);
+        
+        
+        // Replace time values
+	
+        time_t curtime;
+
+        time(&curtime);
+        
+        // Generate path
+        Path = CUtils::FormatTime(curtime, Path, m_pUser->GetTimezone());
+        
 
 	CString DirPath = Path.substr(0, Path.find_last_of("/"));
 	CString FilePath;
